@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        margin-top: 10px;
+    }
+
+    .page-header h2 {
+        font-weight: 700;
+        color: #1f2d3d;
+        font-size: 1.6rem;
+        margin: 0;
+    }
+
+    .table-card {
+        background: #ffffff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+        animation: slideUp 0.4s ease;
+    }
+
+    .table thead tr th {
+        background: linear-gradient(90deg, #1d4ed8, #2563eb);
+        color: white;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 14px 16px;
+        letter-spacing: 0.4px;
+        border: none;
+    }
+
+    .table tbody tr td {
+        vertical-align: middle;
+        text-align: center;
+        padding: 14px 16px;
+        color: #374151;
+        font-size: 14px;
+        border-bottom: 1px solid #f1f5f9;
+        background: transparent;
+    }
+
+    .table tbody tr:hover td {
+        background-color: #f0f5ff;
+        transition: background 0.2s;
+    }
+
+    .table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .match-badge {
+        display: inline-block;
+        padding: 6px 13px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .btn-apply {
+        border-radius: 20px;
+        padding: 6px 18px;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .btn-apply:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+    }
+
+    .salary-text {
+        font-weight: 600;
+        color: #059669;
+    }
+
+    .applied-badge {
+        background: #dbeafe;
+        color: #1e40af;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        padding: 50px 20px;
+        text-align: center;
+        color: #9ca3af;
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="container mt-4">
+
+    <!-- Header -->
+    <div class="page-header">
+        <h2><i class="bi bi-briefcase-fill me-2 text-primary"></i>Available Jobs</h2>
+    </div>
+
+    <!-- Table Card -->
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Job Title</th>
+                        <th>Location</th>
+                        <th>Salary</th>
+                        <th>Posted By</th>
+                        <th>Match %</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in job_data %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><strong>{{ item.job.title }}</strong></td>
+                        <td>
+                            <i class="bi bi-geo-alt-fill text-secondary me-1"></i>
+                            {{ item.job.location }}
+                        </td>
+                        <td><span class="salary-text">₹{{ item.job.salary }}</span></td>
+                        <td>
+                            <i class="bi bi-person-fill text-secondary me-1"></i>
+                            {{ item.job.posted_by.username }}
+                        </td>
+
+                        <!-- Match Badge -->
+                        <td>
+                            {% if item.match_percentage >= 70 %}
+                            <span class="match-badge bg-success text-white">{{ item.match_percentage }}%</span>
+                            {% elif item.match_percentage >= 40 %}
+                            <span class="match-badge bg-warning text-dark">{{ item.match_percentage }}%</span>
+                            {% else %}
+                            <span class="match-badge bg-danger text-white">{{ item.match_percentage }}%</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Apply Button -->
+                        <td>
+                            <a href="{% url 'apply_job' item.job.id %}" class="btn btn-primary btn-sm btn-apply">
+                                <i class="bi bi-send me-1"></i>Apply
+                            </a>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                No jobs available right now. Check back soon!
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

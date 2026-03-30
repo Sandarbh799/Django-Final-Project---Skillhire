@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #c1d3ea, #f8fbff);
+    }
+
+    .job-card {
+        border-radius: 15px;
+        overflow: hidden;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .job-header {
+        background: linear-gradient(135deg, #5c89cc, #4e9cff);
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 10px;
+        border: 1px solid #dcdcdc;
+        transition: 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 8px rgba(13, 110, 253, 0.2);
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .btn-custom {
+        border-radius: 25px;
+        padding: 10px 25px;
+        font-weight: 500;
+        transition: 0.3s;
+    }
+
+    .btn-success:hover {
+        transform: scale(1.05);
+    }
+
+    .btn-outline-secondary:hover {
+        transform: scale(1.05);
+    }
+
+    textarea {
+        height: 80px !important;
+        resize: none;
+    }
+    
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+
+            <div class="card shadow-lg job-card border-0">
+
+                <div class="job-header">
+                    <h3>Create / Edit Job</h3>
+                    <p class="mb-0">Fill in the job details professionally</p>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <!-- Django Form -->
+                        <div class="mb-3">
+                            {{ form.as_p }}
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-success btn-custom">
+                                Save Job →
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

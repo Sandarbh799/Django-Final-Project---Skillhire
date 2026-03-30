@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+
+<style>
+    body {
+        background-image: url("{% static 'images/1537619_4685.jpg' %}");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+    }
+
+    .dashboard-header {
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        color: white;
+        padding: 40px 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .dashboard-card {
+        border: none;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        background: #ffffff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: 0.3s;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .welcome-text {
+        font-size: 28px;
+        font-weight: 600;
+        color: #0d6efd;
+    }
+
+    .dashboard-card {
+        background: #ffffff;
+        border-radius: 15px;
+        padding: 30px 20px;
+        text-align: center;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        transition: 0.3s;
+        height: 100%;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .dashboard-card h5 {
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .dashboard-card .btn {
+        border-radius: 25px;
+        padding: 10px 20px;
+        width: 100%;
+        font-weight: 500;
+        transition: 0.3s;
+    }
+
+    .dashboard-card .btn:hover {
+        transform: scale(1.05);
+    }
+
+    .icon-box {
+        font-size: 40px;
+        margin-bottom: 15px;
+    }
+</style>
+
+<div class="container mt-5">
+
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h2>Welcome, {{ request.user.username }} 👋</h2>
+        <h1 class="mb-0">Recruiter Dashboard</h1>
+    </div>
+
+    <!-- Cards -->
+    <div class="row g-4">
+
+        <!-- Post Job -->
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <div class="icon-box text-primary">💼</div>
+                <h5>Post New Job</h5>
+                <a href="{% url 'create_job' %}" class="btn btn-primary">
+                    Create Job
+                </a>
+            </div>
+        </div>
+
+        <!-- Manage Jobs -->
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <div class="icon-box text-success">📋</div>
+                <h5>Manage Jobs</h5>
+                <a href="{% url 'recruiter_jobs' %}" class="btn btn-success">
+                    View Posted Jobs
+                </a>
+            </div>
+        </div>
+
+        <!-- Applicants -->
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <div class="icon-box text-info">👥</div>
+                <h5>Applicants</h5>
+                <a href="{% url 'all_applicants' %}" class="btn btn-info text-white">
+                    View Applications
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .schedule-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.schedule-card {
+    width: 600px;
+    padding: 40px;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.schedule-card h3 {
+    font-weight: 600;
+}
+
+.schedule-card input,
+.schedule-card select {
+    height: 45px;
+    border-radius: 8px;
+}
+
+.schedule-btn {
+    width: 40%;
+    height: 45px;
+    border-radius: 8px;
+}
+</style>
+
+<link rel="stylesheet" href="{% static 'css/schedule.css' %}">
+
+<div class="schedule-wrapper">
+
+    <div class="schedule-card">
+
+        <h3 class="text-center mb-4">Schedule Interview</h3>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="row g-3">
+
+                <!-- Date -->
+                <div class="col-md-6">
+                    <label class="form-label">Interview Date</label>
+                    <input type="date" name="date" class="form-control" id="dateField" required>
+                </div>
+
+                <!-- Time + AM/PM -->
+                <div class="col-md-6">
+                    <label class="form-label">Interview Time</label>
+
+                    <div class="d-flex gap-2">
+                        <input type="time" name="time" id="timeField" class="form-control" required>
+
+                        <select name="am_pm" class="form-select" style="max-width:100px;">
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Mode -->
+                <div class="col-md-6">
+                    <label class="form-label">Mode</label>
+                    <select name="mode" class="form-select">
+                        <option value="online">Online</option>
+                        <option value="offline">Offline</option>
+                    </select>
+                </div>
+
+                <!-- Meeting Link -->
+                <div class="col-md-6">
+                    <label class="form-label">Meeting Link</label>
+                    <input type="text" name="meeting_link" class="form-control">
+                </div>
+
+                <!-- Button -->
+                <div class="col-12 text-center mt-3">
+                    <button type="submit" class="btn btn-primary schedule-btn">
+                        Schedule Interview
+                    </button>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+    const dateInput = document.getElementById("dateField");
+    const timeInput = document.getElementById("timeField");
+
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+
+    // Disable past dates
+    dateInput.setAttribute("min", today);
+
+    dateInput.addEventListener("change", function () {
+        const selectedDate = dateInput.value;
+
+        if (selectedDate === today) {
+            // Current time (HH:MM)
+            let hours = now.getHours().toString().padStart(2, '0');
+            let minutes = now.getMinutes().toString().padStart(2, '0');
+
+            let currentTime = `${hours}:${minutes}`;
+
+            timeInput.setAttribute("min", currentTime);
+        } else {
+            timeInput.removeAttribute("min");
+        }
+    });
+</script>
+
+{% endblock %}

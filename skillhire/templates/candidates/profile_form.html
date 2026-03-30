@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<style>
+    body {
+        background-image: url("{% static 'images/1537619_4685.jpg' %}");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        max-width: 950px;
+        margin: 40px auto;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
+    }
+
+    .banner {
+        height: 160px;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #ff4b2b, #4facfe);
+        position: relative;
+    }
+
+    .profile-img {
+        position: absolute;
+        bottom: -45px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .profile-img img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 5px solid white;
+        object-fit: cover;
+        transition: 0.3s;
+    }
+
+    .profile-img img:hover {
+        transform: scale(1.05);
+    }
+
+    .form-section {
+        margin-top: 70px;
+    }
+
+    .form-control {
+        border-radius: 12px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        transition: 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #4facfe;
+        box-shadow: 0 0 5px rgba(79, 172, 254, 0.5);
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    textarea.form-control {
+        min-height: 80px;
+    }
+
+    .file-info {
+        font-size: 13px;
+        color: green;
+        margin-bottom: 5px;
+    }
+
+    .btn-primary {
+        border-radius: 25px;
+        padding: 10px 25px;
+        font-weight: 600;
+        background: linear-gradient(90deg, #4facfe, #00c6ff);
+        border: none;
+        transition: 0.3s;
+    }
+
+    .btn-primary:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+<div class="profile-card">
+
+    <!-- Banner -->
+    <div class="banner">
+        <div class="profile-img">
+            {% if profile.profile_picture %}
+            <img src="{{ profile.profile_picture.url }}">
+            {% else %}
+            <img src="https://via.placeholder.com/90">
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="form-section">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <label>Full Name</label>
+                    <input type="text" name="full_name" class="form-control" value="{{ profile.full_name|default:'' }}"
+                        required>
+                </div>
+
+                <div class="col-md-6">
+                    <label>Gender</label>
+                    <select name="gender" class="form-control">
+                        <option value="">Select</option>
+                        <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
+                        <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mt-3">
+                    <label>Email</label>
+                    <input type="email" name="email" class="form-control" value="{{ request.user.email|default:'' }}">
+                </div>
+
+                <div class="col-md-6 mt-3">
+                    <label>Phone</label>
+                    <input type="text" name="phone" class="form-control" pattern="[0-9]{10,15}"
+                        value="{{ profile.phone|default:'' }}" required>
+                    {% if error %}
+                    <div style="color:red;">
+                        {{ error }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6 mt-3">
+                    <label>Date of Birth</label>
+                    <input type="date" name="dob" class="form-control" value="{{ profile.dob|date:'Y-m-d' }}">
+                </div>
+
+                <div class="col-md-6 mt-3">
+                    <label>Country</label>
+                    <input type="text" name="country" class="form-control" value="{{ profile.country|default:'' }}">
+                </div>
+
+                <div class="col-md-6 mt-3">
+                    <label>State</label>
+                    <input type="text" name="state" class="form-control" value="{{ profile.state|default:'' }}">
+                </div>
+
+                <div class="col-md-6 mt-3">
+                    <label>Profile Picture</label>
+                    <input type="file" name="profile_picture" class="form-control">
+
+                    {% if profile.profile_picture %}
+                    <p class="file-info">
+                        Current: {{ profile.profile_picture.name|cut:"profiles/" }}
+                    </p>
+                    {% endif %}
+                </div>
+
+                <div class="col-12 mt-3">
+                    <label>Address</label>
+                    <textarea name="address" class="form-control">{{ profile.address|default:'' }}</textarea>
+                </div>
+
+                <div class="col-12 mt-3">
+                    <label>Bio</label>
+                    <textarea name="bio" class="form-control">{{ profile.bio|default:'' }}</textarea>
+                </div>
+
+                <div class="col-md-6 mt-3">
+                    <label>Experience (Years)</label>
+                    <input type="number" name="experience" class="form-control"
+                        value="{{ profile.experience|default:'0' }}">
+                </div>
+
+                <div class="col-md-6 mt-3">
+                    <label>Resume</label>
+
+                    <input type="file" name="resume" class="form-control">
+
+                    {% if profile.resume %}
+                    <p class="file-info">
+                        Current: {{ profile.resume.name|cut:"resumes/" }}
+                    </p>
+
+                    <a href="{{ profile.resume.url }}" target="_blank" class="btn btn-sm btn-success">
+                        View Resume
+                    </a>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <button class="btn btn-primary mt-4">Save Profile</button>
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}

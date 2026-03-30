@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .page-header {
+        margin-bottom: 24px;
+        margin-top: 10px;
+    }
+
+    .page-header h2 {
+        font-weight: 700;
+        color: #1f2d3d;
+        font-size: 1.6rem;
+    }
+
+    .table-card {
+        background: #ffffff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+        animation: slideUp 0.4s ease;
+    }
+
+    .table thead tr th {
+        background: linear-gradient(90deg, #1d4ed8, #2563eb);
+        color: white;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 14px 16px;
+        letter-spacing: 0.4px;
+        border: none;
+    }
+
+    .table tbody tr td {
+        vertical-align: middle;
+        text-align: center;
+        padding: 14px 16px;
+        color: #374151;
+        font-size: 14px;
+        border-bottom: 1px solid #f1f5f9;
+        background: transparent;
+    }
+
+    .table tbody tr:hover td {
+        background-color: #f0f5ff;
+        transition: background 0.2s;
+    }
+
+    .table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .badge-status {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12.5px;
+        font-weight: 600;
+    }
+
+    .match-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12.5px;
+        font-weight: 600;
+    }
+
+    .applied-date {
+        font-size: 12.5px;
+        color: #6b7280;
+    }
+
+    .empty-state {
+        padding: 50px 20px;
+        text-align: center;
+        color: #9ca3af;
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="container mt-4">
+
+    <!-- Header -->
+    <div class="page-header">
+        <h2><i class="bi bi-file-earmark-text me-2 text-primary"></i>My Applications</h2>
+    </div>
+
+    <!-- Table Card -->
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Job Title</th>
+                        <th>Posted By</th>
+                        <th>Match %</th>
+                        <th>Status</th>
+                        <th>Applied On</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in application_data %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><strong>{{ item.job.title }}</strong></td>
+                        <td>
+                            <i class="bi bi-person-fill text-secondary me-1"></i>
+                            {{ item.job.posted_by.username }}
+                        </td>
+
+                        <!-- Match Badge -->
+                        <td>
+                            {% if item.match_percentage >= 70 %}
+                            <span class="match-badge bg-success text-white">{{ item.match_percentage }}%</span>
+                            {% elif item.match_percentage >= 40 %}
+                            <span class="match-badge bg-warning text-dark">{{ item.match_percentage }}%</span>
+                            {% else %}
+                            <span class="match-badge bg-danger text-white">{{ item.match_percentage }}%</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Status Badge -->
+                        <td>
+                            {% if item.status == 'pending' %}
+                                <span class="badge-status bg-warning text-dark">⏳ Pending</span>
+                            {% elif item.status == 'shortlisted' %}
+                                <span class="badge-status bg-success text-white">✅ Shortlisted</span>
+                            {% else %}
+                                <span class="badge-status bg-danger text-white">❌ Rejected</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Date -->
+                        <td>
+                            <span class="applied-date">
+                                <i class="bi bi-calendar3 me-1"></i>
+                                {{ item.applied_at|date:"d M Y, h:i A" }}
+                            </span>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                You have not applied to any jobs yet.
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

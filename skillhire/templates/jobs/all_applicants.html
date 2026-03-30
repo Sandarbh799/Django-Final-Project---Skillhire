@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        margin-top: 10px;
+    }
+
+    .page-header h2 {
+        font-weight: 700;
+        color: #1f2d3d;
+        font-size: 1.6rem;
+        margin: 0;
+    }
+
+    .table-card {
+        background: #ffffff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+        animation: slideUp 0.4s ease;
+    }
+
+    .table thead tr th {
+        background: linear-gradient(90deg, #1d4ed8, #2563eb);
+        color: white;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 14px 16px;
+        letter-spacing: 0.4px;
+        border: none;
+    }
+
+    .table tbody tr td {
+        vertical-align: middle;
+        text-align: center;
+        padding: 14px 16px;
+        color: #374151;
+        font-size: 14px;
+        border-bottom: 1px solid #f1f5f9;
+        background: transparent;
+    }
+
+    .table tbody tr:hover td {
+        background-color: #f0f5ff;
+        transition: background 0.2s;
+    }
+
+    .table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .match-badge {
+        display: inline-block;
+        padding: 6px 13px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 12.5px;
+        font-weight: 600;
+    }
+
+    .job-chip {
+        background: #eff6ff;
+        color: #1e40af;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12.5px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .btn-action {
+        border-radius: 20px;
+        padding: 5px 13px;
+        font-size: 12px;
+        font-weight: 500;
+        margin: 2px;
+        transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    }
+
+    .no-resume {
+        color: #9ca3af;
+        font-size: 12.5px;
+    }
+
+    .empty-state {
+        padding: 50px 20px;
+        text-align: center;
+        color: #9ca3af;
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="container mt-4">
+
+    <!-- Header -->
+    <div class="page-header">
+        <h2>
+            <i class="bi bi-people-fill me-2 text-primary"></i>All Applicants
+        </h2>
+        <span class="badge bg-primary" style="font-size:14px; padding:8px 16px; border-radius:20px;">
+            Total: {{ applicant_data|length }}
+        </span>
+    </div>
+
+    <!-- Table Card -->
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Applied Job</th>
+                        <th>Education</th>
+                        <th>Experience</th>
+                        <th>Resume</th>
+                        <th>Match %</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in applicant_data %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+
+                        <td>
+                            <i class="bi bi-person-circle text-secondary me-1"></i>
+                            <strong>{{ item.candidate.username }}</strong>
+                        </td>
+
+                        <td>
+                            <span class="job-chip">
+                                <i class="bi bi-briefcase me-1"></i>{{ item.job.title }}
+                            </span>
+                        </td>
+
+                        <td>{{ item.profile.education }}</td>
+                        <td>{{ item.profile.experience }} yrs</td>
+
+                        <td>
+                            {% if item.profile.resume %}
+                            <a href="{{ item.profile.resume.url }}" class="btn btn-secondary btn-sm btn-action" target="_blank">
+                                <i class="bi bi-download me-1"></i>Download
+                            </a>
+                            {% else %}
+                            <span class="no-resume"><i class="bi bi-x-circle me-1"></i>No Resume</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Match % -->
+                        <td>
+                            {% if item.match_percentage >= 70 %}
+                            <span class="match-badge bg-success text-white">{{ item.match_percentage }}%</span>
+                            {% elif item.match_percentage >= 40 %}
+                            <span class="match-badge bg-warning text-dark">{{ item.match_percentage }}%</span>
+                            {% else %}
+                            <span class="match-badge bg-danger text-white">{{ item.match_percentage }}%</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Status -->
+                        <td>
+                            {% if item.application.status == 'pending' %}
+                            <span class="status-badge bg-warning text-dark">⏳ Pending</span>
+                            {% elif item.application.status == 'shortlisted' %}
+                            <span class="status-badge bg-success text-white">✅ Shortlisted</span>
+                            {% else %}
+                            <span class="status-badge bg-danger text-white">❌ Rejected</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Actions -->
+                        <td>
+                            <a href="{% url 'update_status' item.application.id 'shortlisted' %}"
+                                class="btn btn-success btn-sm btn-action">
+                                <i class="bi bi-check-lg me-1"></i>Shortlist
+                            </a>
+                            <a href="{% url 'update_status' item.application.id 'rejected' %}"
+                                class="btn btn-danger btn-sm btn-action">
+                                <i class="bi bi-x-lg me-1"></i>Reject
+                            </a>
+                            {% if item.application.job.id and item.profile.user.id %}
+                            <a href="{% url 'schedule_interview' item.application.job.id item.profile.user.id %}"
+                                class="btn btn-warning btn-sm btn-action">
+                                <i class="bi bi-calendar-check me-1"></i>Schedule
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="9">
+                            <div class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                No applicants yet. Post a job to start receiving applications.
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
